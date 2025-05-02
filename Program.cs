@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using PAW_Project.Data;
+using PAW_Project.Services;
+
 namespace PAW_Project;
 
 public class Program
@@ -8,6 +12,14 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+        
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                new MySqlServerVersion(new Version(8, 0, 41)))); 
+        
+        builder.Services.AddScoped<ConnectionTester>();
+
+
 
         var app = builder.Build();
 
