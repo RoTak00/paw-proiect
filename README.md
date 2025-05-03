@@ -1,5 +1,39 @@
 # Image helper
 
+## How to run
+
+This project was built in JetBrains Rider on Ubuntu.
+
+### Requirements 
+- .NET 8 SDK or later
+- MySQL (running locally)
+- EF Core CLI tools (dotnet ef)
+
+### JetBrains Rider 
+
+- Open the solution file
+- Open _appsettings.json_ and edit the connection settings __ConnectionStrings:DefaultConnection__ to match your MySQL connection
+- Run the migrations running this in the terminal: ````dotnet ef database update```` 
+- Build and Run the project __(Shift + F10)__ 
+
+### Visual Studio 
+
+- Open the solution file
+- Open _appsettings.json_ and edit the connection settings __ConnectionStrings:DefaultConnection__ to match your MySQL connection
+- Run the migrations running this in the __Package Manager Console__: ```Update-Database```
+- Run the project __(F5)__
+
+(This was not tested)
+
+### CLI
+Run the following: 
+````
+dotnet ef database update
+dotnet run
+````
+
+(This was not tested)
+
 ## TODO list
 
 ### Visuals
@@ -8,13 +42,13 @@
 - [ ] page style
 
 ### Database
-- [ ] Users table
-- [ ] AuthenticationToken table (if using auth token style auth - simplest)
+- [x] Users table
+- [x] ~~AuthenticationToken table (if using auth token style auth - simplest)~~ Using ASP.NET Identity instead
 - [ ] ~~FileOwners~~ Files table (which links file to user) 
 
 ### Pages
-- [ ] login
-- [ ] register
+- [x] login
+- [x] register
 - [ ] ~~log out~~
 - [ ] ~~upload image~~ 
 - [ ] convert image (with all the actions - includes upload)
@@ -30,7 +64,7 @@
 - [ ] text recognition -> if possible in time limit
 - [ ] color space transformation
 
-# Changelog
+## Changelog
 
 _02.05.2025 - Robert Takacs_
 
@@ -43,3 +77,12 @@ _02.05.2025 - Robert Takacs_
 - Created connection message on index page to mark whether connection to MySQL database was successful or not.
 
 ---
+
+_03.05.2025 - Robert Takacs_
+
+- Configured __ASP.NET Identity__ with MySQL for secure authentication and role-based authorization
+  - Seeded Account Roles in the database on startup - __User__ and __Admin__
+  - Seeded test accounts in the database on startup - __Admin__ and __User__
+  - Created MVC pages for __Register__ and __Login__
+  - Created MVC pages to test authorization based on authentication and role __User/Profile__ and __Admin/Panel__
+  - Created AccessDenied page for unauthorized requests
