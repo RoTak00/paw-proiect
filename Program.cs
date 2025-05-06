@@ -37,11 +37,15 @@ public class Program
             options.AccessDeniedPath = "/Account/AccessDenied";
         });
         
+        builder.Services.AddTransient<IEmailService, SmtpEmailSender>();
+
+        
         builder.Services.AddScoped<ConnectionTester>();
 
 
 
         var app = builder.Build();
+        
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PAW_Project.Models;
+using PAW_Project.Services;
 using PAW_Project.ViewModels;
 
 namespace PAW_Project.Controllers;
@@ -9,11 +10,13 @@ public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IEmailService _emailService;
     
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -39,6 +42,14 @@ public class AccountController : Controller
         {
             await _userManager.AddToRoleAsync(user, "User");
             await _signInManager.SignInAsync(user, isPersistent: false);
+            
+            _emailService.SendEmailAsync(
+                model.Email,
+                "Welcome to ImageHelper",
+                $"<h1>Welcome to ImageHelper</h1>" +
+                $"<p>Hello, {model.Username}</p>" +
+                $"<p>Your account has been created!</p>");
+            
             return RedirectToAction("Index", "Home");
         }
 
