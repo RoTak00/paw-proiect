@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PAW_Project.Models;
+using PAW_Project.Models.Email;
 using PAW_Project.Services;
 using PAW_Project.ViewModels;
 
@@ -43,12 +44,16 @@ public class AccountController : Controller
             await _userManager.AddToRoleAsync(user, "User");
             await _signInManager.SignInAsync(user, isPersistent: false);
             
-            _emailService.SendEmailAsync(
+            var emailModel = new WelcomeEmailModel()
+            {
+                Username = model.Username,
+            };
+            
+            _emailService.SendTemplatedEmailAsync(
                 model.Email,
                 "Welcome to ImageHelper",
-                $"<h1>Welcome to ImageHelper</h1>" +
-                $"<p>Hello, {model.Username}</p>" +
-                $"<p>Your account has been created!</p>");
+                "WelcomeEmail",
+                emailModel);
             
             return RedirectToAction("Index", "Home");
         }
@@ -92,6 +97,82 @@ public class AccountController : Controller
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
+
+    [HttpGet]
+    public IActionResult ForgotPassword() => View();
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+        
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+        
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var resetLink = Url.Action("ResetPassword", "Account", 
+            new { token = token, email = user.Email }, Request.Scheme);
+
+        var resetPasswordModel = new ResetPasswordEmailModel()
+        {
+            Username = user.UserName,
+            ResetLink = resetLink
+        };
+        
+        _emailService.SendTemplatedEmailAsync(model.Email, 
+            "ImageHelper - Reset your Password",
+            "ResetPasswordEmail",
+            resetPasswordModel);
+        
+        return RedirectToAction("ForgotPasswordConfirmation");
+    }
+
+    public IActionResult ForgotPasswordConfirmation()
+    {
+        return View();
+    }
+    
+    [HttpGet]
+    public IActionResult ResetPassword(string token, string email)
+    {
+        if (token == null || email == null)
+            return BadRequest("A token and email are required.");
+
+        var model = new ResetPasswordViewModel { Token = token, Email = email };
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+            return RedirectToAction("ResetPasswordConfirmation");
+
+        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+        if (result.Succeeded)
+            return RedirectToAction("ResetPasswordConfirmation");
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        return View(model);
+    }
+
+    public IActionResult ResetPasswordConfirmation()
+    {
+        return View();
+    }
+
 
     public IActionResult AccessDenied()
     {

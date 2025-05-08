@@ -100,7 +100,16 @@ _03.05.2025 - Robert Takacs_
   - Created MVC pages to test authorization based on authentication and role __User/Profile__ and __Admin/Panel__
   - Created AccessDenied page for unauthorized requests
 
+---
+
 _06.05.2025 - Robert Takacs_
 
 - Configured simple e-mail service using SmtpClient
 - Configured application to connect to local smtp4dev container, where mails can be seen
+
+---
+
+_07.05.2025 - Robert Takacs_
+
+- Implemented e-mail template functionality
+- Created "Forgot your password" functionality
