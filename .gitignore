@@ -1,0 +1,5 @@
+/input_images/random_image*
+/output_*
+.venv/
+*.pyc
+__pycache__/
