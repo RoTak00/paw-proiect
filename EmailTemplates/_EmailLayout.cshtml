@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+            color: #333;
+        }
+        .email-container {
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        p {
+            line-height: 1.6;
+            margin: 16px 0;
+        }
+        .footer {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    @RenderBody()
+
+    <div class="footer">
+        <p>If you did not request this action, please reply to this email so we can investigate and secure your information.</p>
+        <p>Thank you,<br>The ImageHelper Team</p>
+    </div>
+</div>
+</body>
+</html>
