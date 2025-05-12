@@ -113,3 +113,12 @@ _07.05.2025 - Robert Takacs_
 
 - Implemented e-mail template functionality
 - Created "Forgot your password" functionality
+
+---
+
+_12.05.2025 - Robert Takacs_
+
+- Added file upload with drag & drop and preview thumbnail
+- Added tool selection grid (currently mock tools)
+- Showing result display with loading spinner and download button
+- Save uploads in uploads folder
