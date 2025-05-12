@@ -1,9 +1,58 @@
-﻿@{
+﻿@model PAW_Project.ViewModels.HomeViewModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     
+    <div id="upload-container" class="dropzone border border-primary rounded text-center p-5 mb-4 bg-light">
+        <input type="file" id="image-upload" accept=".png,.jpg,.jpeg,.webp" hidden />
+        <p class="text-muted">Drag & Drop your image here<br>or</p>
+        <button id="select-button" type="button" class="btn btn-primary">Select File</button>
+    </div>
+
+    <div id="uploaded-image-section" class="text-center" style="display:none;">
+        <img id="uploaded-image-preview" src="" class="img-thumbnail mb-3" style="width: 150px;" />
+        <br />
+        <button id="upload-another" type="button" class="btn btn-outline-secondary btn-sm">Upload another file</button>
+    </div>
+
+
+
+    <div id="tools-grid" style="display:none;">
+        <h3>Select a Tool</h3>
+        <div class="row g-3">
+            @foreach (var tool in Model.ImageTools)
+            {
+                <div class="col-6 col-md-3">
+                    <div class="card tool-card text-center p-3" data-toolid="@tool.ToolId" data-tool="@tool.Name" style="cursor: pointer;">
+                        <h5>@tool.Name</h5>
+                        <small class="text-muted">@tool.Description</small>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <div id="result-container" class="text-center mt-5" style="display:none;">
+        <h3>Processed Result</h3>
+        <div id="loading-indicator" class="my-3" style="display:none;">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Processing...</p>
+        </div>
+        <img id="result-image" src="" class="img-fluid mx-auto d-block" style="max-width: 500px; display:none;" />
+        <br />
+        <a id="download-result" href="#" download="processed_image.png" class="btn btn-success mt-3" style="display:none;">Download Result</a>
+    </div>
+
+
+    
     <p>@ViewBag.ConnectionStatus</p>
 </div>
+
+@section Scripts {
+    <script src="~/js/image-tools.js"></script>
+}
