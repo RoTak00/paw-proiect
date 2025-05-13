@@ -36,15 +36,7 @@ public class HomeController : Controller
         {
             // Create a set of mock tools to be used by the user
             // These will be loaded from the database in the future
-            ImageTools = new List<ImageToolModel>
-            {
-                new ImageToolModel { ToolId = 1, Name = "Background Removal", Description = "Removes the background from images." },
-                new ImageToolModel { ToolId = 2, Name = "Edge Detection", Description = "Detects edges in the image." },
-                new ImageToolModel { ToolId = 3, Name = "Object Detection", Description = "Identifies objects in the image." },
-                new ImageToolModel { ToolId = 4, Name = "Filter", Description = "Applies artistic filters to your image." },
-                new ImageToolModel { ToolId = 5, Name = "Pixeliser", Description = "Pixelizes an image." },
-                new ImageToolModel { ToolId = 6, Name = "Robertify", Description = "Transforms all the people in an image into Robert." },
-            }
+            ImageTools = _context.ImageTools.ToList()
         };
 
         return View(model);
