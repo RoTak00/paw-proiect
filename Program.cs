@@ -73,6 +73,7 @@ public class Program
         {
             DbSeeder.SeedRolesAsync(scope.ServiceProvider).Wait();
             DbSeeder.SeedUsersAsync(scope.ServiceProvider).Wait();
+            DbSeeder.SeedImageToolsAsync(scope.ServiceProvider).Wait();
         }
 
         app.Run();

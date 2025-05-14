@@ -3,7 +3,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using PAW_Project.Data;
 using PAW_Project.Models;
-using ZstdSharp.Unsafe;
 
 namespace PAW_Project.Controllers;
 
