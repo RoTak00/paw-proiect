@@ -7,3 +7,9 @@ riderModule.iml
 # Ignore contents of uploads folder but keep the folder
 wwwroot/uploads/*
 !wwwroot/uploads/.gitkeep
+
+.venv
+detectron2.egg-info
+detectron2
+wwwroot/output_*/
+

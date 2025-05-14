@@ -13,7 +13,9 @@ This project was built in JetBrains Rider on Ubuntu.
 
 - Open the solution file
 - Open _appsettings.json_ and edit the connection settings __ConnectionStrings:DefaultConnection__ to match your MySQL connection
-- Run the migrations running this in the terminal: ````dotnet ef database update```` 
+- Run the migrations running this in the terminal: ````dotnet ef database update````
+- In the command line, run ````python3 ./PythonScripts/activate_venv.py````
+  - This requires that a python 3.10 version is installed and usable on the device.
 - Build and Run the project __(Shift + F10)__ 
 
 ### Visual Studio 
@@ -21,6 +23,8 @@ This project was built in JetBrains Rider on Ubuntu.
 - Open the solution file
 - Open _appsettings.json_ and edit the connection settings __ConnectionStrings:DefaultConnection__ to match your MySQL connection
 - Run the migrations running this in the __Package Manager Console__: ```Update-Database```
+- In the command line, run ````python3 ./PythonScripts/activate_venv.py````
+  - This requires that a python 3.10 version is installed and usable on the device.
 - Run the project __(F5)__
 
 (This was not tested)
@@ -29,6 +33,7 @@ This project was built in JetBrains Rider on Ubuntu.
 Run the following: 
 ````
 dotnet ef database update
+python3 ./PythonScripts/activate_venv.py
 dotnet run
 ````
 
@@ -57,22 +62,22 @@ After which the Web UI can be accessed at the following link [http://localhost:3
 ### Database
 - [x] Users table
 - [x] ~~AuthenticationToken table (if using auth token style auth - simplest)~~ Using ASP.NET Identity instead
-- [ ] ~~FileOwners~~ Files table (which links file to user) 
+- [x] ~~FileOwners~~ Files table (which links file to user) 
 
 ### Pages
 - [x] login
 - [x] register
 - [ ] ~~log out~~
 - [ ] ~~upload image~~ 
-- [ ] convert image (with all the actions - includes upload)
+- [x] convert image (with all the actions - includes upload)
 - [ ] see my files 
 
 ### Functions 
-- [ ] background removal
-- [ ] contour detection
+- [x] background removal
+- [x] contour detection
 - [ ] smoothing
-- [ ] object detection -> if possible in time limit
-- [ ] face detection -> if possible in time limit
+- [x] object detection -> if possible in time limit
+- [x] face detection -> if possible in time limit
 - [ ] resizing (downscaling and upscaling)
 - [ ] text recognition -> if possible in time limit
 - [ ] color space transformation
@@ -130,10 +135,12 @@ _13.05.2025 - Norina Alexandru_
 - Created database models for Uploaded Files, Image Tools and Image Tasks
 - Connected tool selection to present the real existent tools and connected them to the website
 - Implemented database saving in the context of logged-in users.
+- Created .venv setup guide as an .ipynb file 
 
 _14.05.2025 - Robert Takacs_
 
 - Created DBSeeder function that loads Tools into the database if not existent
 - Created error message on tool AJAX fail
-- Wrote README.md updates
+- Updated the .venv setup guide to function as a one-run .py file
+- Updated .gitignore
 
