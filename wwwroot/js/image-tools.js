@@ -104,13 +104,31 @@ document.querySelectorAll('.tool-card').forEach(card => {
 
                     document.getElementById('loading-indicator').style.display = 'none';
                 } else {
-                    alert('Processing failed.');
-                    document.getElementById('loading-indicator').style.display = 'none';
+                    showError('Processing failed. Please try again.');
                 }
 
-                // Re-enable buttons
+            }).catch(err => {
+                console.error(err);
+                showError('An unexpected error occurred while processing the image.');
+            })
+            .finally(() => {
+                document.getElementById('loading-indicator').style.display = 'none';
                 document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('disabled'));
             });
     });
 });
+
+function showError(message) {
+    let errorContainer = document.getElementById('error-message');
+    if (!errorContainer) {
+        errorContainer = document.createElement('div');
+        errorContainer.id = 'error-message';
+        errorContainer.className = 'alert alert-danger mt-3';
+        document.getElementById('result-container').appendChild(errorContainer);
+    }
+
+    errorContainer.textContent = message;
+    errorContainer.style.display = 'block';
+}
+
 

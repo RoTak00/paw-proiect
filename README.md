@@ -122,3 +122,18 @@ _12.05.2025 - Robert Takacs_
 - Added tool selection grid (currently mock tools)
 - Showing result display with loading spinner and download button
 - Save uploads in uploads folder
+
+_13.05.2025 - Norina Alexandru_
+
+- Implemented venv that allows Python Scripts to be run on the local server
+- Implemented various image processing scripts in Python
+- Created database models for Uploaded Files, Image Tools and Image Tasks
+- Connected tool selection to present the real existent tools and connected them to the website
+- Implemented database saving in the context of logged-in users.
+
+_14.05.2025 - Robert Takacs_
+
+- Created DBSeeder function that loads Tools into the database if not existent
+- Created error message on tool AJAX fail
+- Wrote README.md updates
+
