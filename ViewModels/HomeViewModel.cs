@@ -4,5 +4,5 @@ namespace PAW_Project.ViewModels;
 
 public class HomeViewModel
 {
-    public List<ImageToolModel> ImageTools { get; set; } = new List<ImageToolModel>();
+    public List<ImageTool> ImageTools { get; set; } = new List<ImageTool>();
 }
