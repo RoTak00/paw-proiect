@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PAW_Project.Data;
+using PAW_Project.Models;
 using PAW_Project.ViewModels;
 
 namespace PAW_Project.Controllers;
@@ -11,11 +13,13 @@ namespace PAW_Project.Controllers;
 [Authorize]
 public class UserController : Controller
 {
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<UserController> _logger;
     private readonly AppDbContext _context;
 
-    public UserController(ILogger<UserController> logger, AppDbContext context)
+    public UserController(UserManager<ApplicationUser> userManager, ILogger<UserController> logger, AppDbContext context)
     {
+        _userManager = userManager;
         _logger = logger;
         _context = context;
     }
@@ -26,18 +30,18 @@ public class UserController : Controller
     
     public async Task<IActionResult> MyImages()
     {
-        if (User.Identity?.IsAuthenticated == true)
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var uploaded = await _context.UploadFiles
-                .Where(f => f.UserId == userId)
+                .Where(f => f.UserId == user.Id)
                 .ToListAsync();
 
             var tasks = await _context.ImageTasks
                 .Include(t => t.File)
                 .Include(t => t.ImageTool)
-                .Where(t => t.File.UserId == userId)
+                .Where(t => t.File.UserId == user.Id)
                 .ToListAsync();
 
             var grouped = tasks
@@ -76,5 +80,23 @@ public class UserController : Controller
             _context.ImageTasks.Remove(task);
         }
         return RedirectToAction("MyImages");
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveTheme([FromBody] ThemeDto dto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null)
+        {
+            user.PreferredTheme = dto.Theme;
+            await _userManager.UpdateAsync(user);
+        }
+        return Ok();
+    }
+
+    public class ThemeDto
+    {
+        public string Theme { get; set; }
     }
 }

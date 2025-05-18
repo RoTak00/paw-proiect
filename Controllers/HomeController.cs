@@ -38,6 +38,7 @@ public class HomeController : Controller
             // These will be loaded from the database in the future
             ImageTools = _context.ImageTools.ToList()
         };
+        
 
         return View(model);
     }
