@@ -144,3 +144,15 @@ _14.05.2025 - Robert Takacs_
 - Updated the .venv setup guide to function as a one-run .py file
 - Updated .gitignore
 
+_18.05.2025 - Norina Alexandru_
+
+- Created My Images page
+- Added Delete option for all the files
+
+_18.05.2025 - Norina Alexandru_
+
+- Integrated new color theme (light and dark) on bootstrap using SCSS
+- Added theme toggle 
+- Saved theme in cookies
+- Saved theme in the database
+
