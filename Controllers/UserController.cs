@@ -16,16 +16,97 @@ public class UserController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<UserController> _logger;
     private readonly AppDbContext _context;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public UserController(UserManager<ApplicationUser> userManager, ILogger<UserController> logger, AppDbContext context)
+    public UserController(UserManager<ApplicationUser> userManager, ILogger<UserController> logger, AppDbContext context, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _logger = logger;
         _context = context;
+        _signInManager = signInManager;
     }
     public IActionResult Profile()
     {
-        return View();
+        var user = _userManager.GetUserAsync(User).Result;
+        var model = new ProfileViewModel
+        {
+            username = user.UserName,
+            email = user.Email
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateProfile(ProfileViewModel model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null)
+        {
+            user.UserName = model.username;
+            user.Email = model.email;
+            await _userManager.UpdateAsync(user);
+            TempData["SuccessMessage"] = "Name/Email changed successfully!";
+        }
+        return RedirectToAction("Profile");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword(ProfileViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction("Profile", new { fragment = "changePassword" });
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, model.currentPassword, model.newPassword);
+        if (result.Succeeded)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+            TempData["SuccessMessage"] = "Password changed successfully!";
+            return RedirectToAction("Profile"); 
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        return RedirectToAction("Profile", model);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteAccount()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        // Delete the user
+        var result = await _userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            await _signInManager.SignOutAsync();
+            TempData["SuccessMessage"] = "Your account has been deleted successfully.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        // If deletion failed, show errors
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        TempData["ErrorMessage"] = "There was a problem deleting your account.";
+        return RedirectToAction("Profile", new { section = "deleteAccount" });
     }
     
     public async Task<IActionResult> MyImages()

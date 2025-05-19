@@ -83,7 +83,16 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            
+            var user = await _userManager.FindByNameAsync(model.Username);
+            var theme = user.PreferredTheme ?? "light";
+            Response.Cookies.Append("theme", theme, new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(30), // keep it for 30 days
+                IsEssential = true, // required for GDPR compliance if tracking is disabled
+                HttpOnly = false, // allow JS to read it if needed
+                Secure = false,
+                SameSite = SameSiteMode.Lax
+            });
             return RedirectToAction("Index", "Home");
         }
 
