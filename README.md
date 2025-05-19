@@ -156,3 +156,13 @@ _18.05.2025 - Norina Alexandru_
 - Saved theme in cookies
 - Saved theme in the database
 
+_19.05.2025 - Norina Alexandru_
+
+- Added logo and brand name
+- Updated color theme for buttons
+- Added profile settings:
+  - change name and email
+  - change password
+  - delete acount
+- Rearranged menu bar
+
