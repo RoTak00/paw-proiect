@@ -144,10 +144,33 @@ public class UserController : Controller
     public async Task<IActionResult> DeleteUpload(int id)
     {
         var file = await _context.UploadFiles.FindAsync(id);
+        var user = await _userManager.GetUserAsync(User);
         if (file != null)
         {
+            if (user == null || file.UserId != user.Id)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to delete this file.";
+                return RedirectToAction("MyImages");
+            }
+            var inputPath = Path.Combine("wwwroot/uploads/", file.FileName);
+            var outputPaths = _context.ImageTasks
+                .Where(t => t.FileId == file.Id)
+                .Select(t => t.OutputPath)
+                .ToList();
             _context.UploadFiles.Remove(file);
             await _context.SaveChangesAsync();
+            foreach (var path in outputPaths)
+            {
+                var complete = "./wwwroot" + path;
+                if (System.IO.File.Exists(complete))
+                {
+                    System.IO.File.Delete(complete);
+                }
+            }
+            if (System.IO.File.Exists(inputPath))
+            {
+                System.IO.File.Delete(inputPath);
+            }
         }
         return RedirectToAction("MyImages");
     }
@@ -158,7 +181,25 @@ public class UserController : Controller
         var task = await _context.ImageTasks.FindAsync(id);
         if (task != null)
         {
+            var baseImage = await _context.UploadFiles.FindAsync(task.FileId);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || baseImage == null || baseImage.UserId != user.Id)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to delete this file.";
+                return RedirectToAction("MyImages");
+            }
+
+            var path = "./wwwroot" + task.OutputPath;
             _context.ImageTasks.Remove(task);
+            await _context.SaveChangesAsync();
+            Console.WriteLine(path);
+            // Delete the file from the server
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+            TempData["SuccessMessage"] = "Task deleted successfully.";
+            
         }
         return RedirectToAction("MyImages");
     }
