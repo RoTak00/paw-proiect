@@ -2,26 +2,32 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    var fileUploaded = !string.IsNullOrEmpty(Model.UploadedFilePath);
+
+    var displayState = fileUploaded ? "block" : "none";
+    var oppositeDisplayState = fileUploaded ? "none" : "block";
+    
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     
-    <div id="upload-container" class="dropzone border border-primary rounded text-center p-5 mb-4">
+    <div id="upload-container" class="dropzone border border-primary rounded text-center p-5 mb-4" style = "display:@oppositeDisplayState">
         <input type="file" id="image-upload" accept=".png,.jpg,.jpeg,.webp" hidden />
         <p class="text-muted">Drag & Drop your image here<br>or</p>
         <button id="select-button" type="button" class="btn btn-primary">Select File</button>
     </div>
 
-    <div id="uploaded-image-section" class="text-center" style="display:none;">
-        <img id="uploaded-image-preview" src="" class="img-thumbnail mb-3" style="width: 150px;" />
+    <div id="uploaded-image-section" class="text-center" style="display:@displayState;">
+        <img id="uploaded-image-preview" src="@(fileUploaded ? Model.UploadedFilePath : "")" class="img-thumbnail mb-3" style="width: 150px;" />
         <br />
         <button id="upload-another" type="button" class="btn btn-outline-secondary btn-sm">Upload another file</button>
+        <input type="hidden" value = "@(fileUploaded ? Model.FileToken : "")" id = "uploaded-file-id">
     </div>
 
 
 
-    <div id="tools-grid" style="display:none;">
+    <div id="tools-grid" style="display:@displayState;">
         <h3>Select a Tool</h3>
         <div class="row g-3">
             @foreach (var tool in Model.ImageTools)
@@ -47,10 +53,7 @@
         <br />
         <a id="download-result" href="#" download="processed_image.png" class="btn btn-success mt-3" style="display:none;">Download Result</a>
     </div>
-
-
     
-    <p>@ViewBag.ConnectionStatus</p>
 </div>
 
 @section Scripts {

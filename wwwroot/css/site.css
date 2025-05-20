@@ -46,5 +46,6 @@ body {
 
 .tool-card.disabled {
   opacity: 0.5;
-  pointer-events: none;
+  pointer-events: none !important;
+  cursor: default !important;
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PAW_Project.Data;
 using PAW_Project.Models;
 
@@ -16,53 +17,95 @@ public class ToolsController : Controller
         _logger = logger;
         _context = context;
     }
-    // Receive an image and a tool to use on the image through AJAX
-    // Run the python script directly and present the saved image to the user
+
     [HttpPost]
-    public async Task<IActionResult> ProcessImage(IFormFile imageFile, int toolId)
+    public async Task<IActionResult> SaveUploadedFile(IFormFile file)
     {
-        if (imageFile == null || imageFile.Length == 0)
-            return BadRequest("No file uploaded.");
-
-        // You can now load a tool from DB by toolId if needed
-        // var tool = await _context.Tools.FindAsync(toolId);
-        var tool = await _context.ImageTools.FindAsync(toolId);
-
+        if (file == null || file.Length == 0)
+        {
+            return Json(new { success = false, message = "No file could be found..." });
+        }
+        
         var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-        Directory.CreateDirectory(uploadsPath);
-
-        var fileName = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
+        if (!Directory.Exists(uploadsPath))
+        {
+            Directory.CreateDirectory(uploadsPath);
+        }
+        
+        var originalFileName = Path.GetFileName(file.FileName);
+        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
         var filePath = Path.Combine(uploadsPath, fileName);
 
-        await using (var stream = new FileStream(filePath, FileMode.Create))
+        using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            await imageFile.CopyToAsync(stream);
+            await file.CopyToAsync(stream);
         }
-        if (tool == null)
+    
+        // After saving the file to the server, 
+        // Also save it to the database, initially as a temp file
+        UploadFile uploadFile = new UploadFile
         {
-            return BadRequest("Tool not found.");
-        }
+            FileName = fileName,
+            AddedDate = DateTime.Now,
+            OriginalFileName = originalFileName,
+            IsTemp = true,
+            Token = Guid.NewGuid()
+        };
 
-        UploadFile uploadFile = null;
-        // add the update file in database
         if (User.Identity?.IsAuthenticated == true)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId != null)
             {
-                uploadFile = new UploadFile
-                {
-                    FileName = fileName,
-                    UserId = userId,
-                    AddedDate = DateTime.Now
-                };
-
-                _context.UploadFiles.Add(uploadFile);
-                await _context.SaveChangesAsync();
+                uploadFile.UserId = userId;
             }
         }
         
-        // Simulate tool processing delay
+        
+        Console.WriteLine(uploadFile);
+        
+        _context.UploadFiles.Add(uploadFile);
+        await _context.SaveChangesAsync();
+        
+        
+        
+        return Json(new { success = true, message = "File saved successfully!", fileId = uploadFile.Token });
+
+    }
+    
+    // Receive an image and a tool to use on the image through AJAX
+    // Run the python script directly and present the saved image to the user
+    [HttpPost]
+    public async Task<IActionResult> ProcessImage(Guid file, int toolId)
+    {
+        
+        var tool = await _context.ImageTools.FindAsync(toolId);
+        if (tool == null)
+        {
+            return BadRequest("Tool not found.");
+        }
+
+        string? userId = null;
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+        
+        var uploadFile = await _context.UploadFiles.Where(f => f.Token == file && f.UserId == userId).FirstOrDefaultAsync();
+
+        if (uploadFile == null)
+        {
+            return BadRequest("File not found.");
+        }
+        
+        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        var filePath = Path.Combine(uploadsPath, uploadFile.FileName);
+
+        if (!System.IO.File.Exists(filePath))
+        {
+            return BadRequest("File not found.");
+        }
+        
         String venvPath = Path.Combine(Directory.GetCurrentDirectory(), ".venv/bin/python");
         String scriptPath = Path.Combine(Directory.GetCurrentDirectory(), tool.ScriptPath);
         
@@ -91,26 +134,29 @@ public class ToolsController : Controller
             }
 
             var foldername = "output_" + Path.GetFileNameWithoutExtension(tool.ScriptPath);
-            var outputFile = Path.GetFileNameWithoutExtension(fileName) + ".png";
-            var outputPath = Path.Combine("/",foldername, outputFile);
-            Console.WriteLine(outputPath);
+            var outputFile = Path.GetFileNameWithoutExtension(uploadFile.FileName) + ".png";
+            var outputPath = Path.Combine("/", foldername, outputFile);
+            //Console.WriteLine(outputPath);
             var resultUrl = Url.Content(outputPath);
+            var downloadName = Path.GetFileNameWithoutExtension(uploadFile.OriginalFileName) + "_" + Path.GetFileNameWithoutExtension(tool.ScriptPath) + ".png";
             
-            // add the task to the database
-            Console.WriteLine(uploadFile);
-            if (uploadFile != null)
-            {
-                Console.WriteLine(uploadFile.Id);
-                _context.ImageTasks.Add(new ImageTask()
-                {
-                    FileId = uploadFile.Id,
-                    OutputPath = outputPath,
-                    ImageToolId = tool.Id
-                });
-                await _context.SaveChangesAsync();
-            }
+            //add the task to the database
+            //Console.WriteLine(uploadFile);
+            
+            //Console.WriteLine(uploadFile.Id);
 
-            return Json(new { success = true, resultUrl });
+            uploadFile.IsTemp = false;
+            _context.ImageTasks.Add(new ImageTask()
+            {
+                FileId = uploadFile.Id,
+                OutputPath = outputPath,
+                ImageToolId = tool.Id
+            });
+            
+            await _context.SaveChangesAsync();
+        
+
+            return Json(new { success = true, resultUrl = resultUrl, downloadName = downloadName });
         }
     }
 }
