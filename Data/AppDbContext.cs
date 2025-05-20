@@ -10,4 +10,5 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ImageTask> ImageTasks { get; set; } = null!;
     public DbSet<ImageTool> ImageTools { get; set; } = null!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
 }

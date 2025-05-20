@@ -92,7 +92,7 @@ public class ToolsController : Controller
 
             var foldername = "output_" + Path.GetFileNameWithoutExtension(tool.ScriptPath);
             var outputFile = Path.GetFileNameWithoutExtension(fileName) + ".png";
-            var outputPath = Path.Combine("~/",foldername, outputFile);
+            var outputPath = Path.Combine("/",foldername, outputFile);
             Console.WriteLine(outputPath);
             var resultUrl = Url.Content(outputPath);
             

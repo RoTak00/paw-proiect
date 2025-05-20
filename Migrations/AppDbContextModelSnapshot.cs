@@ -229,7 +229,7 @@ namespace PAW_Project.Migrations
                     b.Property<int>("FileId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ImageToolId")
+                    b.Property<int?>("ImageToolId")
                         .HasColumnType("int");
 
                     b.Property<string>("OutputPath")
@@ -357,9 +357,7 @@ namespace PAW_Project.Migrations
 
                     b.HasOne("PAW_Project.Models.ImageTool", "ImageTool")
                         .WithMany()
-                        .HasForeignKey("ImageToolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ImageToolId");
 
                     b.Navigation("File");
 
