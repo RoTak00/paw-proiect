@@ -193,3 +193,17 @@ _19.05.2025 - Norina Alexandru_
   - delete acount
 - Rearranged menu bar
 
+_20.05.2025 - Takacs Robert_
+
+- Modified File Upload and Tool processes
+  - File gets saved to the database exactly on upload, as temp file
+  - URL gets updated with file token
+  - Whenever a tool is clicked, the token is used to load the file and modify it
+  - If the user reloads the page, the file is persistent
+  - Once a tool is used on a file, it stops being marked as "temp"
+  - Files are always saved to the database now, even if not logged
+- Implemented file edit
+  - Simply loads file token on the index page to load file from database
+- Files now have a OriginalFileName which is used for file download
+- Files marked as Temp are deleted periodically if they're older than 6 hours (possibly 8 because timezones)
+

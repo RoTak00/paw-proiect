@@ -37,6 +37,8 @@ uploadContainer.addEventListener('drop', (e) => {
             document.getElementById('tools-grid').style.display = 'block';
         };
         reader.readAsDataURL(file);
+        
+        uploadSelectedFile(file);
     }
 });
 
@@ -53,6 +55,8 @@ imageUploadInput.addEventListener('change', function (e) {
 
         };
         reader.readAsDataURL(file);
+        
+        uploadSelectedFile(file);
     }
 });
 
@@ -68,14 +72,7 @@ document.getElementById('upload-another').addEventListener('click', function (e)
 document.querySelectorAll('.tool-card').forEach(card => {
     card.addEventListener('click', function () {
         const toolId = this.getAttribute('data-toolid');
-        const toolName = this.getAttribute('data-tool');
-        const fileInput = document.getElementById('image-upload');
-
-        if (fileInput.files.length === 0) {
-            alert('Please select an image first.');
-            return;
-        }
-
+        const fileId = document.getElementById("uploaded-file-id").value;
         // Disable buttons
         document.querySelectorAll('.tool-card').forEach(c => c.classList.add('disabled'));
 
@@ -86,7 +83,7 @@ document.querySelectorAll('.tool-card').forEach(card => {
         document.getElementById('download-result').style.display = 'none';
 
         const formData = new FormData();
-        formData.append('imageFile', fileInput.files[0]);
+        formData.append('file', fileId);
         formData.append('toolId', toolId); // <-- use toolId instead of toolName
 
         fetch('/Tools/ProcessImage', {
@@ -100,6 +97,7 @@ document.querySelectorAll('.tool-card').forEach(card => {
                     document.getElementById('result-image').style.display = 'block';
 
                     document.getElementById('download-result').href = data.resultUrl;
+                    document.getElementById('download-result').setAttribute('download', data.downloadName);
                     document.getElementById('download-result').style.display = 'inline-block';
 
                     document.getElementById('loading-indicator').style.display = 'none';
@@ -117,6 +115,33 @@ document.querySelectorAll('.tool-card').forEach(card => {
             });
     });
 });
+
+function uploadSelectedFile(file)
+{
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    fetch('/Tools/SaveUploadedFile', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data =>
+        {
+            if(data.success)
+            {
+                const fileId = data.fileId;
+                
+                const url = new URL(window.location.href);
+                url.searchParams.set("file", fileId);
+                
+                history.replaceState(null, "", url);
+                
+                document.getElementById('uploaded-file-id').value = fileId;
+            }
+        })
+        .catch(err => console.log(err));
+}
 
 function showError(message) {
     let errorContainer = document.getElementById('error-message');
