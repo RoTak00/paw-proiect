@@ -1,6 +1,7 @@
 import cv2
 import os
 import argparse
+import json
 
 working_directory = os.getcwd()
 folder_name = os.path.join(working_directory, "wwwroot")
@@ -33,3 +34,8 @@ image = cv2.imread(image_path)
 resized_image = cv2.resize(image, (args.height, args.width), interpolation=cv2.INTER_CUBIC)
 
 cv2.imwrite(output_path, resized_image)
+
+result = {
+    "filename": os.path.basename(output_path),
+}
+print(json.dumps(result))

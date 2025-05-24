@@ -2,6 +2,34 @@ import easyocr
 import cv2
 import os
 import argparse
+import json
+import math
+
+def sort_results(results, y_threshold=10):
+    # Sort by Y first
+    results.sort(key=lambda r: r[0][0][1])
+
+    sorted_results = []
+    current_line = []
+    last_y = None
+
+    for item in results:
+        y = item[0][0][1]
+        if last_y is None or abs(y - last_y) < y_threshold:
+            current_line.append(item)
+            last_y = y if last_y is None else (last_y + y) / 2
+        else:
+            # Sort current line left-to-right and add to final
+            current_line.sort(key=lambda r: r[0][0][0])  # X of top-left
+            sorted_results.extend(current_line)
+            current_line = [item]
+            last_y = y
+
+    if current_line:
+        current_line.sort(key=lambda r: r[0][0][0])
+        sorted_results.extend(current_line)
+
+    return sorted_results
 
 
 working_directory = os.getcwd()
@@ -27,8 +55,15 @@ image = cv2.imread(image_path)
 # Perform text detection and recognition
 results = reader.readtext(image)
 
+results = sort_results(results)
+
+all_text = []
+
 # Draw bounding boxes around detected text
 for (bbox, text, prob) in results:
+    
+    all_text.append(text)
+    
     (top_left, top_right, bottom_right, bottom_left) = bbox
 
     # Convert to int tuples
@@ -54,6 +89,12 @@ for (bbox, text, prob) in results:
     # Draw text on top
     cv2.putText(image, text, (text_x + 2, text_y - 2),
                 cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 128, 0), font_thickness)
-    print(text)
 
 cv2.imwrite(output_path, image)
+
+result = {
+    "filename": os.path.basename(output_path),
+    "text": " ".join(all_text)
+}
+print(json.dumps(result))
+

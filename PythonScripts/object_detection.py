@@ -8,6 +8,7 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import os
 import argparse
+import json
 
 
 working_directory = os.getcwd()
@@ -46,3 +47,9 @@ v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
 result_image = v.get_image()[:, :, ::-1]
 
 cv2.imwrite(output_path, result_image)
+
+result = {
+    "filename": os.path.basename(output_path),
+}
+print(json.dumps(result))
+

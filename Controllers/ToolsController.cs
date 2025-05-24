@@ -149,33 +149,21 @@ public class ToolsController : Controller
                 return BadRequest("Python error:" + error);
             }
 
-            var foldername = "output_" + Path.GetFileNameWithoutExtension(tool.ScriptPath);
-            var outputFile = Path.GetFileNameWithoutExtension(uploadFile.FileName);
-            switch (toolId)
+            var outputResult = JsonSerializer.Deserialize<Dictionary<string, string>>(output) ?? new Dictionary<string, string>();
+
+            if (!outputResult.TryGetValue("filename", out var outputFile))
             {
-                case 2:
-                    if (parsedOptions.TryGetValue("tool_input_color_space", out var colorSpace))
-                    {
-                        outputFile += $"_{colorSpace.Trim()}";
-                    }
-                    break;
-                case 6:
-                    if (parsedOptions.TryGetValue("tool_input_width", out var widthStr) &&
-                        parsedOptions.TryGetValue("tool_input_height", out var heightStr))
-                    {
-                        var width = int.Parse(Regex.Match(widthStr, @"\d+").Value);
-                        var height = int.Parse(Regex.Match(heightStr, @"\d+").Value);
-                        outputFile += $"_{width}x{height}";
-                    }
-                    break;
+                return BadRequest("The output file was not generated properly.");
             }
+    
+            Console.WriteLine(outputFile);
             
-            outputFile += ".png";
-            var outputPath = Path.Combine("/", foldername, outputFile);
+            var folderName = "output_" + Path.GetFileNameWithoutExtension(tool.ScriptPath);
+            var outputPath = Path.Combine("/", folderName, outputFile);
             var resultUrl = Url.Content(outputPath);
             var downloadName = Path.GetFileNameWithoutExtension(uploadFile.OriginalFileName) + "_" + Path.GetFileNameWithoutExtension(tool.ScriptPath) + ".png";
             
-            var outputFullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", foldername, outputFile);
+            var outputFullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderName, outputFile);
 
             if (!System.IO.File.Exists(outputFullPath))
             {
@@ -192,9 +180,15 @@ public class ToolsController : Controller
             });
             
             await _context.SaveChangesAsync();
-        
+            
+            // Also grab other data from the output, such as text 
+            string? detectedText = null;
+            if (outputResult.TryGetValue("text", out var text))
+            {
+                detectedText = text;
+            }
 
-            return Json(new { success = true, resultUrl = resultUrl, downloadName = downloadName });
+            return Json(new { success = true, resultUrl = resultUrl, downloadName = downloadName, text = detectedText });
         }
     }
 }

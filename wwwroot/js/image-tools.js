@@ -266,6 +266,34 @@ function createToolOptions(toolId)
     return options;
 }
 
+function showDetectedText(text)
+{
+    let textContainer= document.getElementById('detected-text');
+    
+    if(!textContainer)
+    {
+        textContainer = document.createElement('textarea');
+        textContainer.id = 'detected-text';
+        textContainer.classList.add('form-control');
+        textContainer.classList.add('mb-3');
+        textContainer.rows = 5;
+        textContainer.readOnly = true;
+        
+        const resultContainer = document.getElementById('result-container');
+        resultContainer.insertBefore(textContainer, document.getElementById('result-image'));
+    }
+    
+    textContainer.value = text;
+}
+
+function hideDetectedText()
+{
+    let textContainer= document.getElementById('detected-text');
+    
+    if(textContainer)
+        textContainer.remove();
+}
+
 function onRunTool(toolId, fileId)
 {
     if(!validateToolInputs(toolId))
@@ -287,6 +315,7 @@ function onRunTool(toolId, fileId)
     formData.append('options', JSON.stringify(createToolOptions(toolId)));
     
     hideToolForm();
+    hideDetectedText();
 
     fetch('/Tools/ProcessImage', {
         method: 'POST',
@@ -315,6 +344,10 @@ function onRunTool(toolId, fileId)
                 document.getElementById('download-result').style.display = 'inline-block';
 
                 document.getElementById('loading-indicator').style.display = 'none';
+
+                if (data.text) {
+                    showDetectedText(data.text);
+                }
             } else {
                 showError('Processing failed. Please try again.');
             }
