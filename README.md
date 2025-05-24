@@ -70,17 +70,17 @@ After which the Web UI can be accessed at the following link [http://localhost:3
 - [ ] ~~log out~~
 - [ ] ~~upload image~~ 
 - [x] convert image (with all the actions - includes upload)
-- [ ] see my files 
+- [x] see my files 
 
 ### Functions 
 - [x] background removal
 - [x] contour detection
 - [ ] smoothing
-- [x] object detection -> if possible in time limit
-- [x] face detection -> if possible in time limit
-- [ ] resizing (downscaling and upscaling)
-- [ ] text recognition -> if possible in time limit
-- [ ] color space transformation
+- [x] object detection
+- [x] face detection
+- [x] resizing (downscaling and upscaling)
+- [x] text recognition
+- [x] color space transformation
 
 ## Changelog
 
@@ -209,6 +209,8 @@ _20.05.2025 - Takacs Robert_
 
 _24.05.2026 - Takacs Robert_
 
-- Implement functionality for tools that need extra input (Color Space Transformation and Resize)
+- Implement functionality for tools that need extra input (Color Space Transformation and Resize), or offer extra output (Text Detection)
 - Better error handling if tool fails
 - Removed aspect ratio requirement of resize
+- Extra checks on file upload (file type and MIME type in the backend)
+- Auto-scrolling to the results once a file finishes 
