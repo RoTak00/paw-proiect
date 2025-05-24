@@ -25,7 +25,22 @@ public class ToolsController : Controller
     {
         if (file == null || file.Length == 0)
         {
-            return Json(new { success = false, message = "No file could be found..." });
+            return BadRequest("No file was uploaded");
+        }
+        
+        // Allowed extensions and MIME types
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif", ".tiff" };
+        var allowedMimeTypes = new[] {
+            "image/jpeg", "image/png", "image/webp",
+            "image/bmp", "image/gif", "image/tiff"
+        };
+        
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var contentType = file.ContentType.ToLowerInvariant();
+
+        if (!allowedExtensions.Contains(extension) || !allowedMimeTypes.Contains(contentType))
+        {
+            return BadRequest("The file type you've uploaded is invalid.");
         }
         
         var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");

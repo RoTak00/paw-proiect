@@ -308,6 +308,7 @@ function onRunTool(toolId, fileId)
     document.getElementById('loading-indicator').style.display = 'block';
     document.getElementById('result-image').style.display = 'none';
     document.getElementById('download-result').style.display = 'none';
+    hideError();
 
     const formData = new FormData();
     formData.append('file', fileId);
@@ -358,10 +359,10 @@ function onRunTool(toolId, fileId)
         // Try to extract and show the error message from the response
         if (err instanceof Response) {
             try {
-                const errorData = await err.json(); // If server returns JSON with an error message
+                const errorData = await err.json(); 
                 showError(errorData.message || 'An error occurred.');
             } catch {
-                const errorText = await err.text(); // fallback for plain text error
+                const errorText = await err.text(); 
                 showError(errorText || 'An unknown server error occurred.');
             }
         } else {
@@ -383,7 +384,19 @@ function uploadSelectedFile(file)
         method: 'POST',
         body: formData
     })
-        .then(res => res.json())
+        .then(async res => {
+            const text = await res.text();
+
+            if (!res.ok) {
+                throw new Error(text); 
+            }
+
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error("Invalid JSON response from server.");
+            }
+        })
         .then(data =>
         {
             if(data.success)
@@ -396,18 +409,35 @@ function uploadSelectedFile(file)
                 history.replaceState(null, "", url);
                 
                 document.getElementById('uploaded-file-id').value = fileId;
+                hideError();
+            }
+            else
+            {
+                document.getElementById('image-upload').value = "";
+                showError(data.message || "An error occurred while uploading the file.");
+                document.getElementById('upload-another').click();
             }
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            document.getElementById('image-upload').value = "";
+            showError(err || "An unexpected error occurred during upload.");
+            document.getElementById('upload-another').click();
+        });
 }
 
+function hideError()
+{
+    let errorContainer = document.getElementById('error-message');
+    if(errorContainer) 
+        errorContainer.remove();
+}
 function showError(message) {
     let errorContainer = document.getElementById('error-message');
     if (!errorContainer) {
         errorContainer = document.createElement('div');
         errorContainer.id = 'error-message';
         errorContainer.className = 'alert alert-danger mt-3';
-        document.getElementById('result-container').appendChild(errorContainer);
+        document.getElementById('content').appendChild(errorContainer);
     }
 
     errorContainer.textContent = message;
