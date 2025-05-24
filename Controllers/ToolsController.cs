@@ -60,6 +60,16 @@ public class ToolsController : Controller
                 uploadFile.UserId = userId;
             }
         }
+        else
+        {
+            var tokens = HttpContext.Session.GetString("UploadedTokens");
+            var tokenList = string.IsNullOrEmpty(tokens)
+                ? new List<string>()
+                : tokens.Split(',').ToList();
+
+            tokenList.Add(uploadFile.Token.ToString());
+            HttpContext.Session.SetString("UploadedTokens", string.Join(",", tokenList.Distinct()));
+        }
         
         
         Console.WriteLine(uploadFile);

@@ -39,8 +39,9 @@ public class Program
         
         builder.Services.AddTransient<IEmailService, SmtpEmailSender>();
 
-        
         builder.Services.AddScoped<ConnectionTester>();
+
+        builder.Services.AddSession();
 
 
 
@@ -61,6 +62,7 @@ public class Program
         // Enforce Authentication on some pages
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseSession();
 
         app.MapStaticAssets();
         app.MapControllerRoute(

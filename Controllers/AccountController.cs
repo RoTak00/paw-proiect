@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PAW_Project.Data;
 using PAW_Project.Models;
 using PAW_Project.Models.Email;
 using PAW_Project.Services;
@@ -12,12 +14,14 @@ public class AccountController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailService _emailService;
+    private readonly AppDbContext _context;
     
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService)
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService, AppDbContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _emailService = emailService;
+        _context = context;
     }
 
     [HttpGet]
@@ -43,6 +47,8 @@ public class AccountController : Controller
         {
             await _userManager.AddToRoleAsync(user, "User");
             await _signInManager.SignInAsync(user, isPersistent: false);
+            
+            await ClaimSessionFilesAsync(user);
             
             var emailModel = new WelcomeEmailModel()
             {
@@ -93,6 +99,8 @@ public class AccountController : Controller
                 Secure = false,
                 SameSite = SameSiteMode.Lax
             });
+
+            await ClaimSessionFilesAsync(user);
             return RedirectToAction("Index", "Home");
         }
 
@@ -183,6 +191,29 @@ public class AccountController : Controller
         return View();
     }
 
+    private async Task ClaimSessionFilesAsync(ApplicationUser user)
+    {
+        var tokens = HttpContext.Session.GetString("UploadedTokens");
+        if (string.IsNullOrEmpty(tokens)) return;
+
+        var tokenList = tokens.Split(',').ToList();
+
+        var files = await _context.UploadFiles
+            .Where(f => tokenList.Contains(f.Token.ToString()) && f.UserId == null)
+            .ToListAsync();
+
+        foreach (var file in files)
+        {
+            file.UserId = user.Id;
+        }
+
+        if (files.Any())
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        HttpContext.Session.Remove("UploadedTokens");
+    }
 
     public IActionResult AccessDenied()
     {
