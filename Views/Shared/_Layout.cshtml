@@ -25,13 +25,11 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav align-items-center flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
-                        <li class="nav-item">
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                <button type="submit" class="btn btn-link nav-link" style="display:inline; padding: 0;">Logout</button>
-                            </form>
-                        </li>
                         if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
@@ -42,9 +40,15 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="User" asp-action="Profile">My Profile</a>
                         </li>
-                        
+
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="User" asp-action="MyImages">My Images</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                <button type="submit" class="btn btn-link nav-link" style="display:inline; padding: 0;">Logout</button>
+                            </form>
                         </li>
                     }
                     else
@@ -56,9 +60,6 @@
                             <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
                         </li>
                     }
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
                 </ul>
                 
                 <ul class="navbar-nav d-flex align-items-center">
