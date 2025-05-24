@@ -372,6 +372,11 @@ function onRunTool(toolId, fileId)
         .finally(() => {
             document.getElementById('loading-indicator').style.display = 'none';
             document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('disabled'));
+
+            const resultSection = document.getElementById('result-container');
+            if (resultSection) {
+                resultSection.scrollIntoView({ behavior: 'smooth' , block: 'end'});
+            }
         });
 }
 
@@ -437,7 +442,11 @@ function showError(message) {
         errorContainer = document.createElement('div');
         errorContainer.id = 'error-message';
         errorContainer.className = 'alert alert-danger mt-3';
-        document.getElementById('content').appendChild(errorContainer);
+        const content = document.getElementById('content');
+        const resultContainer = document.getElementById('result-container');
+        if (content && resultContainer) {
+            content.insertBefore(errorContainer, resultContainer);
+        }
     }
 
     errorContainer.textContent = message;
