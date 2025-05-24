@@ -2,6 +2,7 @@ import cv2
 import os
 import argparse
 import numpy as np
+import json
 
 working_directory = os.getcwd()
 folder_name = os.path.join(working_directory, "wwwroot")
@@ -55,3 +56,8 @@ image[markers == -1] = [0, 0, 255]
 
 # Save or display the result
 cv2.imwrite(output_path, image)
+
+result = {
+    "filename": os.path.basename(output_path),
+}
+print(json.dumps(result))

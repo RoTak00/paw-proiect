@@ -2,6 +2,7 @@ from rembg import remove
 from PIL import Image
 import os
 import argparse
+import json
 
 # create output folder if not exists
 working_directory = os.getcwd()
@@ -26,5 +27,10 @@ input_image = Image.open(image_path)
 output_image = remove(input_image)
 
 output_image.save(output_path, format="PNG")
+
+result = {
+    "filename": os.path.basename(output_path),
+}
+print(json.dumps(result))
 
 

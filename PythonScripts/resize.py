@@ -1,6 +1,7 @@
 import cv2
 import os
 import argparse
+import json
 
 working_directory = os.getcwd()
 folder_name = os.path.join(working_directory, "wwwroot")
@@ -21,15 +22,20 @@ output_path = folder_name + '/' + os.path.basename(image_path).split('.')[0] + "
 
 image = cv2.imread(image_path)
 
-image_height, image_width, _ = image.shape
-aspect_ratio = image_width / image_height
-
-eps = 10**(-7)
-
-if abs(args.width / args.height - aspect_ratio) > eps:
-    print("The aspect ratio is incorrect")
-    exit()
+# image_height, image_width, _ = image.shape
+# aspect_ratio = image_width / image_height
+# 
+# eps = 10**(-7)
+# 
+# if abs(args.width / args.height - aspect_ratio) > eps:
+#     print("The aspect ratio is incorrect")
+#     exit()
 
 resized_image = cv2.resize(image, (args.height, args.width), interpolation=cv2.INTER_CUBIC)
 
 cv2.imwrite(output_path, resized_image)
+
+result = {
+    "filename": os.path.basename(output_path),
+}
+print(json.dumps(result))
