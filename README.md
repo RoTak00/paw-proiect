@@ -207,3 +207,8 @@ _20.05.2025 - Takacs Robert_
 - Files now have a OriginalFileName which is used for file download
 - Files marked as Temp are deleted periodically if they're older than 6 hours (possibly 8 because timezones)
 
+_24.05.2026 - Takacs Robert_
+
+- Implement functionality for tools that need extra input (Color Space Transformation and Resize)
+- Better error handling if tool fails
+- Removed aspect ratio requirement of resize
