@@ -198,7 +198,7 @@ public class UserController : Controller
             {
                 System.IO.File.Delete(path);
             }
-            TempData["SuccessMessage"] = "Task deleted successfully.";
+            TempData["SuccessMessage"] = "Task delete successfully.";
             
         }
         return RedirectToAction("MyImages");
@@ -226,7 +226,7 @@ public class UserController : Controller
         {
             if (user == null || file.UserId != user.Id)
             {
-                TempData["ErrorMessage"] = "You do not have permission to delete this file.";
+                TempData["ErrorMessage"] = "You do not have permission to download this file.";
                 return RedirectToAction("MyImages");
             }
             var inputPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", file.FileName);
@@ -245,7 +245,7 @@ public class UserController : Controller
             var user = await _userManager.GetUserAsync(User);
             if (user == null || baseImage == null || baseImage.UserId != user.Id)
             {
-                TempData["ErrorMessage"] = "You do not have permission to delete this file.";
+                TempData["ErrorMessage"] = "You do not have permission to download this file.";
                 return RedirectToAction("MyImages");
             }
             var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", task.OutputPath);

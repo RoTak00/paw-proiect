@@ -213,3 +213,16 @@ _24.05.2025 - Norina Alexandru_
 - Added download buttons for each image in My Images page
   - needed to update the way we save the output path for more clear code when using Path.Combine
 - Added no images uploaded message
+
+_26.05.2025 - Norina Alexandru_
+
+- Created a draft for Privacy page
+- Created admin panel with:
+  - storage per user
+  - storage per task
+  - usage per task
+  - usage per user
+  - average task per uploaded file
+- Created user manager with:
+  - option for modifying: username, email, password, role and preferred theme
+  - option for deleting user
