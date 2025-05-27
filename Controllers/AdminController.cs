@@ -36,7 +36,7 @@ public class AdminController : Controller
                 }));
 
         var storageByUser = _context.UploadFiles
-            .GroupBy(f => f.User.UserName)
+            .Where(f => f.User != null).GroupBy(f => f.User.UserName)
             .ToDictionary(
                 g => g.Key,
                 g => g.Sum(f =>
@@ -52,7 +52,7 @@ public class AdminController : Controller
                 }));
 
         var taskStorageByUser = _context.ImageTasks
-            .GroupBy(t => t.File.User.UserName)
+            .Where(t => t.File.User != null).GroupBy(t => t.File.User.UserName)
             .ToDictionary(
                 g => g.Key,
                 g => g.Sum(t =>
@@ -78,6 +78,7 @@ public class AdminController : Controller
                 g => g.Count());
         
         var usagePerUser = _context.ImageTasks
+            .Where(t => t.File.User != null)
             .GroupBy(t => t.File.User.UserName)
             .ToDictionary(g => g.Key,
                 g => g.Count());

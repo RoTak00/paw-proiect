@@ -1,5 +1,16 @@
 # Image helper
 
+This project is a web-based platform for uploading and processing images using a variety of server-side tools.
+Users can upload image files, select from different processing options (such as background removal, object detection, resizing, etc.), 
+and receive the processed results directly in the browser. 
+
+Some tools also provide additional output, like detected text. 
+The system supports temporary and persistent file storage, user authentication, and seamless integration with Python-based image processing scripts.
+
+This project was built as the lab project for the Web Application Development course of the Faculty of Mathematics and Informatics, University of Bucharest, 3rd year BA, 2025,
+by [Norina Alexandru](https://github.com/norryna07) and Takacs Robert(https://www.roberttakacs.ro) 
+
+
 ## How to run
 
 This project was built in JetBrains Rider on Ubuntu.
@@ -51,36 +62,6 @@ docker run -d -p 3000:80 -p 2525:25 rnwood/smtp4dev
 ```
 
 After which the Web UI can be accessed at the following link [http://localhost:3000](http://localhost:3000)
-
-## TODO list
-
-### Visuals
-- [x] color theme
-- [x] logo
-- [ ] page style
-
-### Database
-- [x] Users table
-- [x] ~~AuthenticationToken table (if using auth token style auth - simplest)~~ Using ASP.NET Identity instead
-- [x] ~~FileOwners~~ Files table (which links file to user) 
-
-### Pages
-- [x] login
-- [x] register
-- [ ] ~~log out~~
-- [ ] ~~upload image~~ 
-- [x] convert image (with all the actions - includes upload)
-- [x] see my files 
-
-### Functions 
-- [x] background removal
-- [x] contour detection
-- [ ] smoothing
-- [x] object detection
-- [x] face detection
-- [x] resizing (downscaling and upscaling)
-- [x] text recognition
-- [x] color space transformation
 
 ## Changelog
 
