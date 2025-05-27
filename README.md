@@ -8,7 +8,7 @@ Some tools also provide additional output, like detected text.
 The system supports temporary and persistent file storage, user authentication, and seamless integration with Python-based image processing scripts.
 
 This project was built as the lab project for the Web Application Development course of the Faculty of Mathematics and Informatics, University of Bucharest, 3rd year BA, 2025,
-by [Norina Alexandru](https://github.com/norryna07) and Takacs Robert(https://www.roberttakacs.ro) 
+by [Norina Alexandru](https://github.com/norryna07) and [Takacs Robert](https://www.roberttakacs.ro) 
 
 
 ## How to run
