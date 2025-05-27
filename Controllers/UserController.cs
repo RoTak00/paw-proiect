@@ -161,7 +161,7 @@ public class UserController : Controller
             await _context.SaveChangesAsync();
             foreach (var path in outputPaths)
             {
-                var complete = "./wwwroot" + path;
+                var complete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", path);
                 if (System.IO.File.Exists(complete))
                 {
                     System.IO.File.Delete(complete);
@@ -189,7 +189,7 @@ public class UserController : Controller
                 return RedirectToAction("MyImages");
             }
 
-            var path = "./wwwroot" + task.OutputPath;
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", task.OutputPath);
             _context.ImageTasks.Remove(task);
             await _context.SaveChangesAsync();
             Console.WriteLine(path);
@@ -215,6 +215,44 @@ public class UserController : Controller
             await _userManager.UpdateAsync(user);
         }
         return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DownloadImage(int id)
+    {
+        var file = await _context.UploadFiles.FindAsync(id);
+        var user = await _userManager.GetUserAsync(User);
+        if (file != null)
+        {
+            if (user == null || file.UserId != user.Id)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to download this file.";
+                return RedirectToAction("MyImages");
+            }
+            var inputPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", file.FileName);
+            var mimeType = "application/octet-stream";
+            return PhysicalFile(inputPath, mimeType, file.OriginalFileName);
+        }
+        return RedirectToAction("MyImages");
+    }
+
+    public async Task<IActionResult> DownloadTask(int id)
+    {
+        var task = await _context.ImageTasks.FindAsync(id);
+        if (task != null)
+        {
+            var baseImage = await _context.UploadFiles.FindAsync(task.FileId);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || baseImage == null || baseImage.UserId != user.Id)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to download this file.";
+                return RedirectToAction("MyImages");
+            }
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", task.OutputPath);
+            var mimeType = "application/octet-stream";
+            return PhysicalFile(path, mimeType, baseImage.FileName);
+        }
+        return RedirectToAction("MyImages");
     }
 
     public class ThemeDto

@@ -55,8 +55,8 @@ After which the Web UI can be accessed at the following link [http://localhost:3
 ## TODO list
 
 ### Visuals
-- [ ] color theme
-- [ ] logo
+- [x] color theme
+- [x] logo
 - [ ] page style
 
 ### Database
@@ -193,7 +193,7 @@ _19.05.2025 - Norina Alexandru_
   - delete acount
 - Rearranged menu bar
 
-_20.05.2025 - Takacs Robert_
+_20.05.2025 - Robert Takacs_
 
 - Modified File Upload and Tool processes
   - File gets saved to the database exactly on upload, as temp file
@@ -207,6 +207,13 @@ _20.05.2025 - Takacs Robert_
 - Files now have a OriginalFileName which is used for file download
 - Files marked as Temp are deleted periodically if they're older than 6 hours (possibly 8 because timezones)
 
+_24.05.2025 - Norina Alexandru_
+
+- Moved Logout link from nav
+- Added download buttons for each image in My Images page
+  - needed to update the way we save the output path for more clear code when using Path.Combine
+- Added no images uploaded message
+
 _24.05.2026 - Takacs Robert_
 
 - Implement functionality for tools that need extra input (Color Space Transformation and Resize), or offer extra output (Text Detection)
@@ -214,3 +221,4 @@ _24.05.2026 - Takacs Robert_
 - Removed aspect ratio requirement of resize
 - Extra checks on file upload (file type and MIME type in the backend)
 - Auto-scrolling to the results once a file finishes 
+

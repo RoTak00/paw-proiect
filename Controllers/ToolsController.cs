@@ -174,7 +174,7 @@ public class ToolsController : Controller
             Console.WriteLine(outputFile);
             
             var folderName = "output_" + Path.GetFileNameWithoutExtension(tool.ScriptPath);
-            var outputPath = Path.Combine("/", folderName, outputFile);
+            var outputPath = Path.Combine(folderName, outputFile);
             var resultUrl = Url.Content(outputPath);
             var downloadName = Path.GetFileNameWithoutExtension(uploadFile.OriginalFileName) + "_" + Path.GetFileNameWithoutExtension(tool.ScriptPath) + ".png";
             

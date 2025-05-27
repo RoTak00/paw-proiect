@@ -3000,7 +3000,7 @@ textarea.form-control-lg {
 }
 
 .btn-success {
-  --bs-btn-color: #000;
+  --bs-btn-color: #fff;
   --bs-btn-bg: #5b946e;
   --bs-btn-border-color: #5b946e;
   --bs-btn-hover-color: #000;
