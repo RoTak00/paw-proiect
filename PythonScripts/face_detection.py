@@ -2,6 +2,7 @@ from retinaface import RetinaFace
 import cv2
 import os
 import argparse
+import json
 
 working_directory = os.getcwd()
 folder_name = os.path.join(working_directory, "wwwroot")
@@ -30,3 +31,8 @@ for key in faces:
     cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
 cv2.imwrite(output_path, image)
+
+result = {
+    "filename": os.path.basename(output_path),
+}
+print(json.dumps(result))

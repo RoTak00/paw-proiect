@@ -1,6 +1,7 @@
 import cv2
 import os
 import argparse
+import json
 
 
 working_directory = os.getcwd()
@@ -31,3 +32,8 @@ else:
     print("The color space must be: GRAY, HSV or BGR")
 
 cv2.imwrite(output_path, new_image)
+
+result = {
+    "filename": os.path.basename(output_path),
+}
+print(json.dumps(result))
