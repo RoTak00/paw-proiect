@@ -222,3 +222,15 @@ _24.05.2026 - Takacs Robert_
 - Extra checks on file upload (file type and MIME type in the backend)
 - Auto-scrolling to the results once a file finishes 
 
+_26.05.2025 - Norina Alexandru_
+
+- Created a draft for Privacy page
+- Created admin panel with:
+  - storage per user
+  - storage per task
+  - usage per task
+  - usage per user
+  - average task per uploaded file
+- Created user manager with:
+  - option for modifying: username, email, password, role and preferred theme
+  - option for deleting user

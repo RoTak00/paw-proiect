@@ -1,7 +1,176 @@
+@using Microsoft.AspNetCore.Identity
+@model PAW_Project.ViewModels.AdminPanelViewModel
+
 @{
     ViewData["Title"] = "Admin Panel";
 }
-<div class = "text-center">
-    <h1 class="display-4">Welcome, Administrator</h1>
-    <p>You must be an admin to see this page.</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Panel</h2>
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="#usagePerUser" class="list-group-item list-group-item-action active" data-bs-toggle="tab">Usage Per User</a>
+                <a href="#usagePerTool" class="list-group-item list-group-item-action" data-bs-toggle="tab">Usage Per Tool</a>
+                <a href="#storageByUser" class="list-group-item list-group-item-action" data-bs-toggle="tab">Storage By User</a>
+                <a href="#storageByTool" class="list-group-item list-group-item-action" data-bs-toggle="tab">Storage By Tool</a>
+                <a href="#averageTasksFile" class="list-group-item list-group-item-action" data-bs-toggle="tab">Average Tasks per File</a>
+                <a href="#userList" class="list-group-item list-group-item-action" data-bs-toggle="tab">User List</a>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+
+                <div id="usagePerUser" class="tab-pane fade show active">
+                    <h4>Usage Per User</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Number of Uses</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var user in Model.UsagePerUser)
+                        {
+                            <tr>
+                                <td>@user.Key</td>
+                                <td>@user.Value</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="usagePerTool" class="tab-pane fade">
+                    <h4>Usage Per Tool</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Number of Uses</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var tool in Model.UsagePerTool)
+                        {
+                            <tr>
+                                <td>@tool.Key</td>
+                                <td>@tool.Value</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="storageByUser" class="tab-pane fade">
+                    <h4>Storage By User (MB)</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Storage Used</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var user in Model.StorageByUser)
+                        {
+                            <tr>
+                                <td>@user.Key</td>
+                                <td>@user.Value.ToString("F2")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="storageByTool" class="tab-pane fade">
+                    <h4>Storage By Tool (MB)</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Storage Used</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var tool in Model.StorageByTool)
+                        {
+                            <tr>
+                                <td>@tool.Key</td>
+                                <td>@tool.Value.ToString("F2")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="averageTasksFile" class="tab-pane fade">
+                    <h4>Average Tasks Per File</h4>
+                    <p>@Model.AverageTasksFile</p>
+                </div>
+
+                <div id="userList" class="tab-pane fade">
+                    <h4>User List</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Theme</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <form asp-action="UpdateUser" method="post">
+                                    <input type="hidden" name="Id" value="@user.Id" />
+                                    <td style="width: 20%;"><input class="form-control" name="Name" value="@user.UserName" /></td>
+                                    <td style="width: 20%;"><input class="form-control" name="Email" value="@user.Email" /></td>
+                                    <td style="width: 20%;">
+                                        <input class="form-control" name="NewPassword" type="password" placeholder="••••••"/>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" name="ColorTheme">
+                                            <option value="Light" selected="@("Light" == user.PreferredTheme)">Light</option>
+                                            <option value="Dark" selected="@("Dark" == user.PreferredTheme)">Dark</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" name="Role">
+                                            <option value="User" selected="@((await Model._userManager.IsInRoleAsync(user, "User")) ? "selected" : null)">User</option>
+                                            <option value="Admin" selected="@((await Model._userManager.IsInRoleAsync(user, "Admin")) ? "selected" : null)">Admin</option>
+                                        </select>
+
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-sm btn-success me-2">Save</button>
+                                        <a asp-action="DeleteUser" asp-route-id="@user.Id" class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                    </td>
+                                </form>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

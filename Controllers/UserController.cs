@@ -198,7 +198,7 @@ public class UserController : Controller
             {
                 System.IO.File.Delete(path);
             }
-            TempData["SuccessMessage"] = "Task deleted successfully.";
+            TempData["SuccessMessage"] = "Task delete successfully.";
             
         }
         return RedirectToAction("MyImages");
